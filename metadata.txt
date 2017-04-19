@@ -1,0 +1,39 @@
+# This file contains metadata for your plugin. Since 
+# version 2.0 of QGIS this is the proper way to supply 
+# information about a plugin. The old method of 
+# embedding metadata in __init__.py will 
+# is no longer supported since version 2.0.
+
+# This file should be included when you package your plugin.# Mandatory items:
+
+[general]
+name=RS&GIS
+qgisMinimumVersion=2.0
+description=Tool supports operations on Landsat (1to8) level 1 data, LISS III and LISS IV satellite data products
+version=0.1
+author=Prathamesh B
+email=prathamesh.barane@gmail.com
+
+about=Tool performs well defined algorithms on raw satellite data to produce popularly used outputs like > Land Surface Temperature (LST) > At. Satellite Brightness Temperature > Normalized Difference Vegetation Index (NDVI) > Normalized Difference Water Index (NDWI) > True Color Composite (TCC) > Flase Color Composite (FCC) > At Satellite Reflectance of available bands > At Satellite Radiance of available bands > Other user defined custom band outputs
+
+tracker=https://github.com/PrathamGitHub/NITK_RS-GIS_17.git
+repository=https://github.com/PrathamGitHub/NITK_RS-GIS_17.git
+# End of mandatory metadata
+
+# Recommended items:
+
+# Uncomment the following line and add your changelog:
+# changelog=
+
+# Tags are comma separated with spaces allowed
+tags= LISS, Landsat, LST, Land Surface Temperature, brightness temperature, reflectance, radiance, NDVI, NDWI, index, vegetation, water index, TCC, FCC, color composite, cloud remove
+
+homepage=
+category=Plugins
+icon=icon.png
+# experimental flag
+experimental=True
+
+# deprecated flag (applies to the whole plugin, not just a single version)
+deprecated=False
+
