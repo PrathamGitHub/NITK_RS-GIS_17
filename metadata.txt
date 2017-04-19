@@ -9,7 +9,7 @@
 [general]
 name=RS&GIS
 qgisMinimumVersion=2.0
-description=Tool supports operations on Landsat (1to8) level 1 data, LISS III and LISS IV satellite data products
+description=Operates on raw satellite data (Landsat 1-8 & LISS) to produce standard outputs and user defined custom band outputs
 version=0.1
 author=Prathamesh B
 email=prathamesh.barane@gmail.com
