@@ -1458,87 +1458,112 @@ class Worker(QtCore.QObject):
             # Define a function for calculating at satellite reflectance
             def reflectance_cal(num, band_string):
                 if sensor_type[num] in ['LC8', 'LE7', 'LT4', 'LT5', 'L3', 'L4']:
-                    band_info=band_string_info(sensor_type[num], band_string)
+                    band_info = band_string_info(sensor_type[num], band_string)
                     if band_info[0] == 1:
                         if not len(output_re[num][band_info[1]]):
-                            if not len(bands[num][band_info[1]]):
-                                get_band_data(num, band_info[2], band_info[1], band_info[3])
-                            if len(bands[num][band_info[1]]):
-                                if sensor_type[num] == 'LC8':
-                                    output_re[num][band_info[1]]=((metadata_required[num][7][band_info[1]] * bands[num][
-                                        band_info[1]]) + \
-                                                                  metadata_required[num][8][band_info[1]]) / math.sin(
-                                        math.radians(metadata_required[num][4]))
-                                    #logger.append('Stored data in output_re[%s][%s]' % (str(num), str(band_info[1])))
-                                if sensor_type[num] in ['LE7', 'LT4', 'LT5', 'L3', 'L4']:
-                                    output_re[num][band_info[1]]=(math.pi * bands[num][band_info[1]] * (
-                                        metadata_required[num][1]) ** 2) / \
-                                                                 (metadata_required[num][2][band_info[1]] * math.sin(
-                                                                     math.radians(metadata_required[num][4])))
-                                    #logger.append('Stored data in output_re[%s][%s]' % (str(num), str(band_info[1])))
+                            if sensor_type[num] in ['LC8']:
+                                if not len(bands[num][band_info[1]]):
+                                    get_band_data(num, band_info[2], band_info[1], band_info[3])
+                            elif sensor_type[num] in ['LC8', 'LE7', 'LT4', 'LT5', 'L3', 'L4']:
+                                if not len(output_ra[num][band_info[1]]):
+                                    radiance_cal(num, band_string)
+                                    band_data_del(num, 'b' + band_string)
+
+                            if len(bands[num][band_info[1]]) and sensor_type[num] == 'LC8':
+                                output_re[num][band_info[1]] = ((metadata_required[num][7][band_info[1]] * bands[num][
+                                    band_info[1]]) + \
+                                                                metadata_required[num][8][band_info[1]]) / math.sin(
+                                    math.radians(metadata_required[num][4]))
+                                # logger.append('Stored data in output_re[%s][%s]' % (str(num), str(band_info[1])))
+                            elif len(output_ra[num][band_info[1]]) and sensor_type[num] in ['LE7', 'LT4', 'LT5', 'L3',
+                                                                                            'L4']:
+                                radiance_cal(num, band_string)
+                                output_re[num][band_info[1]] = (math.pi * output_ra[num][band_info[1]] * (
+                                    metadata_required[num][1]) ** 2) / \
+                                                               (metadata_required[num][2][band_info[1]] * math.sin(
+                                                                   math.radians(metadata_required[num][4])))
+                                # logger.append('Stored data in output_re[%s][%s]' % (str(num), str(band_info[1])))
+
                     if band_info[0] == 2:
                         # for 1st band
                         if not len(output_re[num][band_info[1][0]]):
-                            if not len(bands[num][band_info[1][0]]):
-                                get_band_data(num, band_info[2][0], band_info[1][0], band_info[3])
-                            if len(bands[num][band_info[1][0]]):
-                                if sensor_type[num] == 'LC8':
-                                    output_re[num][band_info[1][0]]=((metadata_required[num][7][band_info[1][0]] * bands[num][
-                                        band_info[1][0]]) + \
-                                                                     metadata_required[num][8][band_info[1][0]]) / math.sin(
-                                        math.radians(metadata_required[num][4]))
-                                    #logger.append('Stored data in output_re[%s][%s]' % (str(num), str(band_info[1][0])))
-                                if sensor_type[num] in ['LE7', 'LT4', 'LT5', 'L3', 'L4']:
-                                    output_re[num][band_info[1][0]]=(math.pi * bands[num][band_info[1][0]] *
-                                                                     metadata_required[num][1] ** 2) / \
-                                                                    (metadata_required[num][2][band_info[1][0]] * math.sin(
-                                                                        math.radians(metadata_required[num][4])))
-                                    #logger.append('Stored data in output_re[%s][%s]' % (str(num), str(band_info[1][0])))
+                            if sensor_type[num] in ['LC8']:
+                                if not len(bands[num][band_info[1][0]]):
+                                    get_band_data(num, band_info[2][0], band_info[1][0], band_info[3])
+                            elif sensor_type[num] in ['LC8', 'LE7', 'LT4', 'LT5', 'L3', 'L4']:
+                                if not len(output_ra[num][band_info[1][0]]):
+                                    radiance_cal(num, band_string)
+                                    band_data_del(num, 'b' + band_string)
+
+                            if len(bands[num][band_info[1][0]]) and sensor_type[num] == 'LC8':
+                                output_re[num][band_info[1][0]] = ((metadata_required[num][7][band_info[1][0]] *
+                                                                    bands[num][
+                                                                        band_info[1][0]]) + \
+                                                                   metadata_required[num][8][
+                                                                       band_info[1][0]]) / math.sin(
+                                    math.radians(metadata_required[num][4]))
+                                # logger.append('Stored data in output_re[%s][%s]' % (str(num), str(band_info[1][0])))
+                            elif len(output_ra[num][band_info[1][0]]) and sensor_type[num] in ['LE7', 'LT4', 'LT5',
+                                                                                               'L3', 'L4']:
+                                output_re[num][band_info[1][0]] = (math.pi * output_ra[num][band_info[1][0]] *
+                                                                   metadata_required[num][1] ** 2) / \
+                                                                  (
+                                                                  metadata_required[num][2][band_info[1][0]] * math.sin(
+                                                                      math.radians(metadata_required[num][4])))
+                                # logger.append('Stored data in output_re[%s][%s]' % (str(num), str(band_info[1][0])))
 
                         # for 2nd band
                         if not len(output_re[num][band_info[1][1]]):
-                            if not len(bands[num][band_info[1][1]]):
-                                get_band_data(num, band_info[2][1], band_info[1][1], band_info[3])
-                            if len(bands[num][band_info[1][1]]):
-                                if sensor_type[num] == 'LC8':
-                                    output_re[num][band_info[1][1]]=((metadata_required[num][7][band_info[1][1]] *
-                                                                      bands[num][
-                                                                          band_info[1][1]]) + \
-                                                                     metadata_required[num][8][
-                                                                         band_info[1][1]]) / math.sin(
-                                        math.radians(metadata_required[num][4]))
-                                    #logger.append('Stored data in output_re[%s][%s]' % (str(num), str(band_info[1][1])))
-                                if sensor_type[num] in ['LE7', 'LT4', 'LT5', 'L3', 'L4']:
-                                    output_re[num][band_info[1][1]]=(math.pi * bands[num][band_info[1][1]] *
-                                                                     metadata_required[num][1] ** 2) / \
-                                                                    (
-                                                                        metadata_required[num][2][band_info[1][1]] * math.sin(
-                                                                            math.radians(metadata_required[num][4])))
-                                    #logger.append('Stored data in output_re[%s][%s]' % (str(num), str(band_info[1][1])))
+                            if sensor_type[num] in ['LC8']:
+                                if not len(bands[num][band_info[1][1]]):
+                                    get_band_data(num, band_info[2][1], band_info[1][1], band_info[3])
+
+                            if len(bands[num][band_info[1][1]]) and sensor_type[num] == 'LC8':
+                                output_re[num][band_info[1][1]] = ((metadata_required[num][7][band_info[1][1]] *
+                                                                    bands[num][
+                                                                        band_info[1][1]]) + \
+                                                                   metadata_required[num][8][
+                                                                       band_info[1][1]]) / math.sin(
+                                    math.radians(metadata_required[num][4]))
+                                # logger.append('Stored data in output_re[%s][%s]' % (str(num), str(band_info[1][1])))
+                            if len(output_ra[num][band_info[1][1]]) and sensor_type[num] in ['LE7', 'LT4', 'LT5', 'L3',
+                                                                                             'L4']:
+                                output_re[num][band_info[1][1]] = (math.pi * output_ra[num][band_info[1][1]] *
+                                                                   metadata_required[num][1] ** 2) / \
+                                                                  (
+                                                                      metadata_required[num][2][
+                                                                          band_info[1][1]] * math.sin(
+                                                                          math.radians(metadata_required[num][4])))
+                                # logger.append('Stored data in output_re[%s][%s]' % (str(num), str(band_info[1][1])))
 
             # Define a fuction for tcc
             def tcc_w_del(num):
                 if sensor_type[num] in ['LC8', 'LE7', 'LT4', 'LT5']:
                     radiance_cal(num, 'r')
                     band_info = band_string_info(sensor_type[num], 'r')
-                    if not len(output_re[num][band_info[1]]):
-                        if ip_user[3][2] == 0 and ip_user[3][5] == 0:
+                    if sensor_type[num] in ['LC8']:
+                        if not len(output_re[num][band_info[1]]):
+                            if ip_user[3][2] == 0 and ip_user[3][5] == 0:
+                                band_data_del(num, 'br')
+                        else:
                             band_data_del(num, 'br')
-                    else:
+                    elif sensor_type[num] in ['LE7', 'LT4', 'LT5']:
                         band_data_del(num, 'br')
+
                     radiance_cal(num, 'g')
                     band_data_del(num, 'bg')
                     radiance_cal(num, 'b')
                     band_data_del(num, 'bb')
-                    r_info=band_string_info(sensor_type[num], 'r')
-                    g_info=band_string_info(sensor_type[num], 'g')
-                    b_info=band_string_info(sensor_type[num], 'b')
+                    r_info = band_string_info(sensor_type[num], 'r')
+                    g_info = band_string_info(sensor_type[num], 'g')
+                    b_info = band_string_info(sensor_type[num], 'b')
 
                     if browse_selected_mode in [1, 3]:
-                        write_text=os.path.join(browse, folder_01, output_path, browse_selected[num],
-                                                metadata_required[num][10] + 'TCC.TIF')
+                        write_text = os.path.join(browse, folder_01, output_path, browse_selected[num],
+                                                  metadata_required[num][10] + 'TCC.TIF')
                     elif browse_selected_mode == 2:
-                        write_text=os.path.join(browse, folder_01, output_path, metadata_required[num][10] + 'TCC.TIF')
+                        write_text = os.path.join(browse, folder_01, output_path,
+                                                  metadata_required[num][10] + 'TCC.TIF')
 
                     '''
                     with rasterio.open(write_text, 'w', count=3, dtype='float64', **spatial_ref[num]) as bh:
@@ -1563,27 +1588,42 @@ class Worker(QtCore.QObject):
                     band_data_del(num, 'bg')
                     radiance_cal(num, 'r')
                     band_info = band_string_info(sensor_type[num], 'r')
-                    if not len(output_re[num][band_info[1]]):
-                        if ip_user[3][2] == 0 and ip_user[3][5] == 0:
+                    if sensor_type[num] in ['LC8']:
+                        if not len(output_re[num][band_info[1]]):
+                            if ip_user[3][2] == 0 and ip_user[3][5] == 0:
+                                band_data_del(num, 'br')
+                        else:
                             band_data_del(num, 'br')
-                    else:
+                    elif sensor_type[num] in ['LE7', 'LT4', 'LT5', 'L3', 'L4']:
                         band_data_del(num, 'br')
+
                     radiance_cal(num, 'n')
                     band_info = band_string_info(sensor_type[num], 'n')
-                    if not len(output_re[num][band_info[1]]):
-                        if ip_user[3][2] == 0 and ip_user[3][5] == 0:
+
+                    if sensor_type[num] in ['LC8']:
+                        if not len(output_re[num][band_info[1]]):
+                            if ip_user[3][2] == 0 and ip_user[3][5] == 0:
+                                band_data_del(num, 'bn')
+                        else:
                             band_data_del(num, 'bn')
-                    else:
+                    elif sensor_type[num] in ['LE7', 'LT4', 'LT5', 'L3', 'L4']:
                         band_data_del(num, 'bn')
-                    g_info=band_string_info(sensor_type[num], 'g')
-                    r_info=band_string_info(sensor_type[num], 'r')
-                    n_info=band_string_info(sensor_type[num], 'n')
+                        # if not len(output_re[num][band_info[1]]):
+                        #     if ip_user[3][2] == 0 and ip_user[3][5] == 0:
+                        #         band_data_del(num, 'an')
+                        # else:
+                        #     band_data_del(num, 'an')
+
+                    g_info = band_string_info(sensor_type[num], 'g')
+                    r_info = band_string_info(sensor_type[num], 'r')
+                    n_info = band_string_info(sensor_type[num], 'n')
 
                     if browse_selected_mode in [1, 3]:
-                        write_text=os.path.join(browse, folder_01, output_path, browse_selected[num],
-                                                metadata_required[num][10] + 'FCC.TIF')
+                        write_text = os.path.join(browse, folder_01, output_path, browse_selected[num],
+                                                  metadata_required[num][10] + 'FCC.TIF')
                     elif browse_selected_mode == 2:
-                        write_text=os.path.join(browse, folder_01, output_path, metadata_required[num][10] + 'FCC.TIF')
+                        write_text = os.path.join(browse, folder_01, output_path,
+                                                  metadata_required[num][10] + 'FCC.TIF')
 
                     '''
                     with rasterio.open(write_text, 'w', count=3, dtype='float64', **spatial_ref[num]) as bh:
@@ -1633,31 +1673,32 @@ class Worker(QtCore.QObject):
             def ndwi_cal_w_del(num):
                 if sensor_type[num] in ['LC8', 'LE7', 'LT4', 'LT5', 'L3', 'L4']:
                     reflectance_cal(num, 'g')
-                    band_info = band_string_info(sensor_type[num], 'g')
-                    if not (len(output_ra[num][band_info[1]])):
-                        if ip_user[3][0] == 0 and ip_user[3][1] == 0:
-                            band_data_del(num, 'bg')
-                    else:
+                    if sensor_type[num] == 'LC8' and ip_user[3][0] == 0 and ip_user[3][1] == 0:
                         band_data_del(num, 'bg')
+                    elif sensor_type[num] in ['LE7', 'LT4', 'LT5', 'L3', 'L4']:
+                        band_data_del(num, 'bg')
+                        if ip_user[3][0] == 0 and ip_user[3][1] == 0:
+                            band_data_del(num, 'ag')
 
                     reflectance_cal(num, 'n')
-                    band_info = band_string_info(sensor_type[num], 'n')
-                    if not (len(output_ra[num][band_info[1]])):
-                        if ip_user[3][1] == 0:
-                            band_data_del(num, 'bn')
-                    else:
+                    if sensor_type[num] == 'LC8' and ip_user[3][1] == 0:
                         band_data_del(num, 'bn')
+                    elif sensor_type[num] in ['LE7', 'LT4', 'LT5', 'L3', 'L4']:
+                        band_data_del(num, 'bn')
+                        if ip_user[3][1] == 0:
+                            band_data_del(num, 'an')
 
-                    g_info=band_string_info(sensor_type[num], 'g')
-                    n_info=band_string_info(sensor_type[num], 'n')
+                    g_info = band_string_info(sensor_type[num], 'g')
+                    n_info = band_string_info(sensor_type[num], 'n')
 
-                    ndwi=(output_re[num][g_info[1]] - output_re[num][n_info[1]]) / (
+                    ndwi = (output_re[num][g_info[1]] - output_re[num][n_info[1]]) / (
                         output_re[num][g_info[1]] + output_re[num][n_info[1]])
                     if browse_selected_mode in [1, 3]:
-                        write_text=os.path.join(browse, folder_01, output_path, browse_selected[num],
-                                                metadata_required[num][10] + 'NDWI.TIF')
+                        write_text = os.path.join(browse, folder_01, output_path, browse_selected[num],
+                                                  metadata_required[num][10] + 'NDWI.TIF')
                     elif browse_selected_mode == 2:
-                        write_text=os.path.join(browse, folder_01, output_path, metadata_required[num][10] + 'NDWI.TIF')
+                        write_text = os.path.join(browse, folder_01, output_path,
+                                                  metadata_required[num][10] + 'NDWI.TIF')
                     gdalo(write_text, spatial_ref[num], ndwi, 1, 6)
                     # Output to logger
                     self.progress.emit('Wrote file\n    "%s"' % (os.path.split(write_text)[1]))
@@ -1699,13 +1740,21 @@ class Worker(QtCore.QObject):
                     if not len(output_extras[num][0]):
                         reflectance_cal(num, 'r')
                         band_data_del(num, 'br')
+                        if sensor_type[num] in ['LE7', 'LT4', 'LT5', 'L3', 'L4']:
+                            band_data_del(num, 'ar')
+
                         reflectance_cal(num, 'n')
                         band_data_del(num, 'bn')
-                        r_info=band_string_info(sensor_type[num], 'r')
-                        n_info=band_string_info(sensor_type[num], 'n')
-                        output_extras[num][0]=(output_re[num][n_info[1]] - output_re[num][r_info[1]]) / (
+                        if sensor_type[num] in ['LE7', 'LT4', 'LT5', 'L3', 'L4']:
+                            band_data_del(num, 'an')
+
+                        r_info = band_string_info(sensor_type[num], 'r')
+                        n_info = band_string_info(sensor_type[num], 'n')
+                        output_extras[num][0] = (output_re[num][n_info[1]] - output_re[num][r_info[1]]) / (
                             output_re[num][n_info[1]] + output_re[num][r_info[1]])
-                        #logger.append('Stored data for NDVI in output_extras[%s][%s]' % (str(num), str(0)))
+                        # logger.error('Stored data for NDVI in output_extras[%s][%s]' % (str(num), str(0)))
+                        band_data_del(num, 'er')
+                        band_data_del(num, 'en')
 
                 elif sensor_type[num] in ['LM1', 'LM2', 'LM3', 'LM4', 'LM5']:
                     if not len(output_extras[num][0]):
@@ -1713,31 +1762,32 @@ class Worker(QtCore.QObject):
                         band_data_del(num, 'br')
                         radiance_cal(num, 'n')
                         band_data_del(num, 'bn')
-                        r_info=band_string_info(sensor_type[num], 'r')
-                        n_info=band_string_info(sensor_type[num], 'n')
-                        output_extras[num][0]=(output_ra[num][n_info[1]] - output_ra[num][r_info[1]]) / (
+                        r_info = band_string_info(sensor_type[num], 'r')
+                        n_info = band_string_info(sensor_type[num], 'n')
+                        output_extras[num][0] = (output_ra[num][n_info[1]] - output_ra[num][r_info[1]]) / (
                             output_ra[num][n_info[1]] + output_ra[num][r_info[1]])
-                        #logger.append('Stored data for NDVI in output_extras[%s][%s]' % (str(num), str(0)))
+                        # logger.error('Stored data for NDVI in output_extras[%s][%s]' % (str(num), str(0)))
+                        band_data_del(num, 'ar')
+                        band_data_del(num, 'an')
 
             # Define a function for At Satellite brightness Temperature Calculation
             def temp_cal(num):
-                if not len(output_extras[num][1]):
-                    if sensor_type[num] in ['LC8', 'LE7', 'LT4', 'LT5']:
-                        radiance_cal(num, 't')
-                        band_data_del(num, 'bt')
-                        t_info=band_string_info(sensor_type[num], 't')  # [#bands, [numbers], [strings], pan]
+                if not len(output_extras[num][1]) and sensor_type[num] in ['LC8', 'LE7', 'LT4', 'LT5']:
+                    radiance_cal(num, 't')
+                    band_data_del(num, 'bt')
+                    t_info = band_string_info(sensor_type[num], 't')  # [#bands, [numbers], [strings], pan]
 
-                        if t_info[0] == 1:
-                            output_extras[num][1]=(metadata_required[num][3][1] / np.log(
-                                (metadata_required[num][3][0] / output_ra[num][t_info[1]]) + 1)) - 273.15
-                            #logger.append('Stored data for temp in output_extras[%s][%s]' % (str(num), str(1)))
-                        if t_info[0] == 2:
-                            output_extras[num][1]=(metadata_required[num][3][1][0] / np.log(
-                                (metadata_required[num][3][0][0] / output_ra[num][t_info[1][0]]) + 1)) - 273.15
-                            #logger.append('Stored data for temp in output_extras[%s][%s]' % (str(num), str(1)))
-                            output_extras[num][2]=(metadata_required[num][3][1][1] / np.log(
-                                (metadata_required[num][3][0][1] / output_ra[num][t_info[1][1]]) + 1)) - 273.15
-                            #logger.append('Stored data for temp in output_extras[%s][%s]' % (str(num), str(2)))
+                    if t_info[0] == 1:
+                        output_extras[num][1] = (metadata_required[num][3][1] / np.log(
+                            (metadata_required[num][3][0] / output_ra[num][t_info[1]]) + 1)) - 273.15
+                        # logger.error('Stored data for temp in output_extras[%s][%s]' % (str(num), str(1)))
+                    if t_info[0] == 2:
+                        output_extras[num][1] = (metadata_required[num][3][1][0] / np.log(
+                            (metadata_required[num][3][0][0] / output_ra[num][t_info[1][0]]) + 1)) - 273.15
+                        # logger.error('Stored data for temp in output_extras[%s][%s]' % (str(num), str(1)))
+                        output_extras[num][2] = (metadata_required[num][3][1][1] / np.log(
+                            (metadata_required[num][3][0][1] / output_ra[num][t_info[1][1]]) + 1)) - 273.15
+                        # logger.error('Stored data for temp in output_extras[%s][%s]' % (str(num), str(2)))
 
             # Define a function for LST calculation
             def lst_cal_w_del(num):
@@ -1767,8 +1817,14 @@ class Worker(QtCore.QObject):
                                                       metadata_required[num][10] + 'LST_' + t_info[2][1])
 
                     ndvi_cal(num)
-                    band_data_del(num, 'er')
-                    band_data_del(num, 'en')
+                    if sensor_type[num] in ['LC8']:
+                        band_data_del(num, 'er')
+                        band_data_del(num, 'en')
+                    elif sensor_type[num] in ['LE7', 'LT4', 'LT5', 'L3', 'L4']:
+                        band_data_del(num, 'er')
+                        band_data_del(num, 'en')
+                        band_data_del(num, 'ar')
+                        band_data_del(num, 'an')
                     # Calculate Proportion of vegitation
                     pv=((output_extras[num][0] - np.nanmin(output_extras[num][0])) / (
                         np.nanmax(output_extras[num][0]) - np.nanmin(output_extras[num][0]))) ** 2
@@ -1851,12 +1907,17 @@ class Worker(QtCore.QObject):
                         self.progress.emit('\n>>> For Short Wave IR band:\n')
                     if ip_user[1][5] == 1:
                         radiance_cal(num, 's')
-                        if ip_user[2][5] == 0:
+                        if sensor_type[num] in ['LE7', 'LT5', 'LT4', 'L3']:
                             band_data_del(num, 'bs')
+                        else:
+                            if ip_user[2][5] == 0:
+                                band_data_del(num, 'bs')
                         band_data_write(num, 'as')
-                        band_data_del(num, 'as')
+                        if not sensor_type[num] in ['LE7', 'LT5', 'LT4', 'L3'] or ip_user[2][5] == 0:
+                            band_data_del(num, 'as')
                     if ip_user[2][5] == 1:
                         reflectance_cal(num, 's')
+                        band_data_del(num, 'as')
                         band_data_del(num, 'bs')
                         band_data_write(num, 'es')
                         band_data_del(num, 'es')
@@ -1899,15 +1960,19 @@ class Worker(QtCore.QObject):
                         self.progress.emit('\n>>> For Blue band:\n')
                     if ip_user[1][1] == 1:
                         radiance_cal(num, 'b')
-                        if ip_user[2][1] == 0:
+                        if sensor_type[num] in ['LE7', 'LT5', 'LT4']:
                             band_data_del(num, 'bb')
+                        else:
+                            if ip_user[2][1] == 0:
+                                band_data_del(num, 'bb')
                         band_data_write(num, 'ab')
-                        if ip_user[3][0] == 0:
+                        if ip_user[3][0] == 0 and (not sensor_type[num] in ['LE7', 'LT5', 'LT4'] or ip_user[2][1] == 0):
                             band_data_del(num, 'ab')
                     if ip_user[2][1] == 1:
                         reflectance_cal(num, 'b')
                         if ip_user[3][0] == 0:
-                            band_data_del(num, 'bb')
+                            band_data_del(num, 'ab')
+                        band_data_del(num, 'bb')
                         band_data_write(num, 'eb')
                         band_data_del(num, 'eb')
 
@@ -1916,15 +1981,21 @@ class Worker(QtCore.QObject):
                         self.progress.emit('\n>>> For Green band:\n')
                     if ip_user[1][2] == 1:
                         radiance_cal(num, 'g')
-                        if ip_user[2][2] == 0 and ip_user[3][3] == 0:
+                        if sensor_type[num] in ['LE7', 'LT5', 'LT4', 'L4', 'L3']:
                             band_data_del(num, 'bg')
+                        else:
+                            if ip_user[2][2] == 0 and ip_user[3][3] == 0:
+                                band_data_del(num, 'bg')
                         band_data_write(num, 'ag')
-                        if ip_user[3][0] == 0 and ip_user[3][1] == 0:
+                        if ip_user[3][0] == 0 and ip_user[3][1] == 0 and (
+                            not sensor_type[num] in ['LE7', 'LT5', 'LT4', 'L4', 'L3'] or (
+                                ip_user[2][2] == 0 and ip_user[3][3] == 0)):
                             band_data_del(num, 'ag')
                     if ip_user[2][2] == 1:
                         reflectance_cal(num, 'g')
                         if ip_user[3][0] == 0 and ip_user[3][1] == 0:
-                            band_data_del(num, 'bg')
+                            band_data_del(num, 'ag')
+                        band_data_del(num, 'bg')
                         band_data_write(num, 'eg')
                         if ip_user[3][3] == 0:
                             band_data_del(num, 'eg')
@@ -1934,15 +2005,21 @@ class Worker(QtCore.QObject):
                         self.progress.emit('\n>>> For Red band:\n')
                     if ip_user[1][3] == 1:
                         radiance_cal(num, 'r')
-                        if ip_user[2][3] == 0 and ip_user[3][2] == 0 and ip_user[3][5] == 0:
+                        if sensor_type[num] in ['LE7', 'LT5', 'LT4', 'L4', 'L3']:
                             band_data_del(num, 'br')
+                        else:
+                            if ip_user[2][3] == 0 and ip_user[3][2] == 0 and ip_user[3][5] == 0:
+                                band_data_del(num, 'br')
                         band_data_write(num, 'ar')
-                        if ip_user[3][0] == 0 and ip_user[3][1] == 0:
+                        if ip_user[3][0] == 0 and ip_user[3][1] == 0 and (
+                            not sensor_type[num] in ['LE7', 'LT5', 'LT4', 'L4', 'L3'] or (
+                                    ip_user[2][3] == 0 and ip_user[3][2] == 0 and ip_user[3][5] == 0)):
                             band_data_del(num, 'ar')
                     if ip_user[2][3] == 1:
                         reflectance_cal(num, 'r')
                         if ip_user[3][0] == 0 and ip_user[3][1] == 0:
-                            band_data_del(num, 'br')
+                            band_data_del(num, 'ar')
+                        band_data_del(num, 'br')
                         band_data_write(num, 'er')
                         if ip_user[3][2] == 0 and ip_user[3][5] == 0:
                             band_data_del(num, 'er')
@@ -1952,15 +2029,21 @@ class Worker(QtCore.QObject):
                         self.progress.emit('\n>>> For Near IR band:\n')
                     if ip_user[1][4] == 1:
                         radiance_cal(num, 'n')
-                        if ip_user[2][4] == 0 and ip_user[3][2] == 0 and ip_user[3][5] == 0 and ip_user[3][3] == 0:
+                        if sensor_type[num] in ['LE7', 'LT5', 'LT4', 'L4', 'L3']:
                             band_data_del(num, 'bn')
+                        else:
+                            if ip_user[2][4] == 0 and ip_user[3][2] == 0 and ip_user[3][5] == 0 and ip_user[3][3] == 0:
+                                band_data_del(num, 'bn')
                         band_data_write(num, 'an')
-                        if ip_user[3][1] == 0:
+                        if ip_user[3][1] == 0 and (not sensor_type[num] in ['LE7', 'LT5', 'LT4', 'L4', 'L3'] or (
+                                        ip_user[2][4] == 0 and ip_user[3][2] == 0 and ip_user[3][5] == 0 and ip_user[3][
+                            3] == 0)):
                             band_data_del(num, 'an')
                     if ip_user[2][4] == 1:
                         reflectance_cal(num, 'n')
                         if ip_user[3][1] == 0:
-                            band_data_del(num, 'bn')
+                            band_data_del(num, 'an')
+                        band_data_del(num, 'bn')
                         band_data_write(num, 'en')
                         if ip_user[3][2] == 0 and ip_user[3][5] == 0 and ip_user[3][3] == 0:
                             band_data_del(num, 'en')
@@ -1986,14 +2069,29 @@ class Worker(QtCore.QObject):
                         if sensor_type[num] in ['LM1', 'LM2', 'LM3', 'LM4', 'LM5']:
                             if ip_user[3][2] == 0:
                                 band_data_del(num, 'an')
-                        else:
+                        elif sensor_type[num] in ['LE7', 'LT4', 'LT5', 'L3', 'L4']:
+                            band_info = band_string_info(sensor_type[num], 'n')
+                            if not len(output_re[num][band_info[1]]):
+                                if ip_user[3][2] == 0 and ip_user[3][5] == 0:
+                                    band_data_del(num, 'an')
+                            else:
+                                band_data_del(num, 'an')
+                        elif sensor_type[num] in ['LC8']:
                             band_data_del(num, 'an')
+
                         if ip_user[3][0] == 0:
                             band_data_del(num, 'ag')
                             if sensor_type[num] in ['LM1', 'LM2', 'LM3', 'LM4', 'LM5']:
                                 if ip_user[3][2] == 0:
                                     band_data_del(num, 'ar')
-                            else:
+                            elif sensor_type[num] in ['LE7', 'LT4', 'LT5', 'L3', 'L4']:
+                                band_info = band_string_info(sensor_type[num], 'r')
+                                if not len(output_re[num][band_info[1]]):
+                                    if ip_user[3][2] == 0 and ip_user[3][5] == 0:
+                                        band_data_del(num, 'ar')
+                                else:
+                                    band_data_del(num, 'ar')
+                            elif sensor_type[num] in ['LC8']:
                                 band_data_del(num, 'ar')
 
                     # for TCC
@@ -2005,7 +2103,14 @@ class Worker(QtCore.QObject):
                         if sensor_type[num] in ['LM1', 'LM2', 'LM3', 'LM4', 'LM5']:
                             if ip_user[3][2] == 0:
                                 band_data_del(num, 'ar')
-                        else:
+                        elif sensor_type[num] in ['LE7', 'LT4', 'LT5']:
+                            band_info = band_string_info(sensor_type[num], 'r')
+                            if not len(output_re[num][band_info[1]]):
+                                if ip_user[3][2] == 0 and ip_user[3][5] == 0:
+                                    band_data_del(num, 'ar')
+                            else:
+                                band_data_del(num, 'ar')
+                        elif sensor_type[num] in ['LC8']:
                             band_data_del(num, 'ar')
 
                     # for NDVI
@@ -2013,14 +2118,10 @@ class Worker(QtCore.QObject):
                         self.progress.emit('\n>>> For Normalized Difference Vegetation Index:\n')
                         ndvi_cal(num)
                         if sensor_type[num] in ['LC8', 'LE7', 'LT4', 'LT5', 'L3', 'L4']:
-                            band_data_del(num, 'er')
-                            band_data_del(num, 'en')
                             band_data_write(num, 'V')
                             if ip_user[3][5] == 0:
                                 band_data_del(num, 'V')
                         elif sensor_type[num] in ['LM1', 'LM2', 'LM3', 'LM4', 'LM5']:
-                            band_data_del(num, 'ar')
-                            band_data_del(num, 'an')
                             band_data_write(num, 'V')
                             band_data_del(num, 'V')
 
@@ -2034,12 +2135,17 @@ class Worker(QtCore.QObject):
                         self.progress.emit('\n>>> For PAN band:\n')
                     if ip_user[1][7] == 1:
                         radiance_cal(num, 'p')
-                        if ip_user[2][7] == 0:
+                        if sensor_type[num] in ['LE7']:
                             band_data_del(num, 'bp')
+                        else:
+                            if ip_user[2][7] == 0:
+                                band_data_del(num, 'bp')
                         band_data_write(num, 'ap')
-                        band_data_del(num, 'ap')
+                        if not sensor_type[num] in ['LE7'] or ip_user[2][7] == 0:
+                            band_data_del(num, 'ap')
                     if ip_user[2][7] == 1:
                         reflectance_cal(num, 'p')
+                        band_data_del(num, 'ap')
                         band_data_del(num, 'bp')
                         band_data_write(num, 'ep')
                         band_data_del(num, 'ep')
@@ -2082,7 +2188,11 @@ class Worker(QtCore.QObject):
                                     reflectance_cal(num, band)
                                 elif 't' in custom_bands_name or sensor_type[num] in ['LM1', 'LM2', 'LM3', 'LM4', 'LM5']:
                                     radiance_cal(num, band)
-                                band_data_del(num, 'b'+band)
+                                band_data_del(num, 'b' + band)
+
+                                if 't' not in custom_bands_name and sensor_type[num] in ['LE7', 'LT4', 'LT5', 'L4', 'L3']:
+                                    band_data_del(num, 'a' + band)
+
                                 info = band_string_info(sensor_type[num], band)
                                 if info[0] == None:
                                     self.progress.emit(':-( Band/s unavailable !')
@@ -2841,4 +2951,5 @@ class RSGIS:
         # show the dialog
         self.dlg.show()
         self.dlg.setFixedSize(self.dlg.size())
-        
+        # Run the dialog event loop
+        # self.dlg.exec_()
