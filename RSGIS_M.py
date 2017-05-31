@@ -61,7 +61,7 @@ ip_extras=[0] * 6
 ip_exclude_following=[0] * 16
 
 class Worker(QtCore.QObject):
-    '''Example worker for calculating the total area of all features in a layer'''
+    
     def __init__(self, ip_user, custom, custom_names, browse, browse_selected_obj, browse_selected_ext_obj, browse_selected_mode, shape_path, if_clip):
         QtCore.QObject.__init__(self)
         # if isinstance(layer, QgsVectorLayer) is False:
