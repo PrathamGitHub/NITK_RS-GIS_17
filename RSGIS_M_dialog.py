@@ -23,13 +23,18 @@
 
 import os
 
-from PyQt4 import QtGui, uic
+#from qgis.PyQt import QtGui, uic
+from qgis.core import *
+from qgis.PyQt import *
+from qgis.PyQt.QtCore import *
+from qgis.PyQt.QtWidgets import *
+from qgis.PyQt.QtGui import *
 
 FORM_CLASS, _ = uic.loadUiType(os.path.join(
     os.path.dirname(__file__), 'RSGIS_M_dialog_base.ui'))
 
 
-class RSGISDialog(QtGui.QDialog, FORM_CLASS):
+class RSGISDialog(QDialog, FORM_CLASS):
     def __init__(self, parent=None):
         """Constructor."""
         super(RSGISDialog, self).__init__(parent)
