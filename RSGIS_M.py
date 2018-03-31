@@ -20,14 +20,29 @@
  *                                                                         *
  ***************************************************************************/
 """
-from PyQt4.QtCore import QSettings, QTranslator, qVersion, QCoreApplication
-from PyQt4.QtGui import QAction, QIcon
+from __future__ import absolute_import
+from future import standard_library
+standard_library.install_aliases()
+from builtins import str
+from builtins import zip
+from builtins import range
+from builtins import object
+
+from qgis.PyQt.QtCore import *
+from qgis.PyQt.QtWidgets import *
+from qgis.PyQt.QtGui import *
+# from qgis.PyQt.QtCore import QSettings, QTranslator, qVersion, QCoreApplication
+# from qgis.PyQt.QtWidgets import QAction
+# from qgis.PyQt.QtGui import QIcon
 # Initialize Qt resources from file resources.py
-import resources
+from . import resources
 # Import the code for the dialog
-from RSGIS_M_dialog import RSGISDialog
+from .RSGIS_M_dialog import RSGISDialog
 import os.path
-from PyQt4 import QtCore, QtGui
+
+from qgis.PyQt import *
+# rom qgis.PyQt import QtCore, QtGui
+
 import time
 # import logging
 import datetime
@@ -117,7 +132,9 @@ class Worker(QtCore.QObject):
             # -----------------------------------------------------------------------------------------------------
             # Create a NITK_RSGIS_******* folder i.e. folder_01
             folder_01='NITK_RSGIS_%s' % (time.strftime("%Y%m%d_") + time.strftime("%H%M%S"))
+            self.progress.emit('%s' % os.path.join(browse, folder_01))
             if not os.path.exists(os.path.join(browse, folder_01)):
+
                 os.makedirs(os.path.join(browse, folder_01))
                 # print("%s is created in directory: %s" % (folder_01, browse))
             else:
@@ -195,18 +212,18 @@ class Worker(QtCore.QObject):
                 # Create empty variable lists
                 num = len(browse_selected) + 1
 
-                folder_files=[[] for x in xrange(num)]
-                folder_files_ext=[[] for x in xrange(num)]
-                raw_metadata_del=[[] for x in xrange(num)]
-                raw_metadata_del = [[] for x in xrange(num)]
-                sensor_type=[[] for x in xrange(num)]
-                metadata_required=[[] for x in xrange(num)]
-                spatial_ref=[[] for x in xrange(num)]
-                spatial_ref_pan=[[] for x in xrange(num)]
-                spatial_ref_pan = [[] for x in xrange(num)]
-                clip_state = [[None] for x in xrange(num)]
-                exclude_following_list = [[] for x in xrange(num)]
-                quality_band = [[] for x in xrange(num)]
+                folder_files=[[] for x in range(num)]
+                folder_files_ext=[[] for x in range(num)]
+                raw_metadata_del=[[] for x in range(num)]
+                raw_metadata_del = [[] for x in range(num)]
+                sensor_type=[[] for x in range(num)]
+                metadata_required=[[] for x in range(num)]
+                spatial_ref=[[] for x in range(num)]
+                spatial_ref_pan=[[] for x in range(num)]
+                spatial_ref_pan = [[] for x in range(num)]
+                clip_state = [[None] for x in range(num)]
+                exclude_following_list = [[] for x in range(num)]
+                quality_band = [[] for x in range(num)]
 
                 del num
 
@@ -218,7 +235,7 @@ class Worker(QtCore.QObject):
                     if browse_selected_mode == 3:
                         req_files = [f for f in os.listdir(os.path.join(browse, file)) if f.endswith('.txt') or f.endswith('.tif') or f.endswith('.TIF')]
                         folder_files[ref_num]=req_files
-                        del req_files, f
+                        del req_files
                     for ext in folder_files[ref_num]:
                         folder_files_ext[ref_num].append('+'+os.path.splitext(ext)[-1])
 
@@ -284,7 +301,7 @@ class Worker(QtCore.QObject):
             # Create function to read metadata file
             def get_meta(meta_text, dir_list, list_num=0):
                 m_name_compile=re.compile(meta_text)
-                m_name="".join(filter(lambda x: m_name_compile.search(x), dir_list))
+                m_name="".join([x for x in dir_list if m_name_compile.search(x)])
                 if len(m_name) != 0:
                     if browse_selected_mode == 1:
                         m_handle=open(os.path.join(browse, folder_01, extract_path, browse_selected[list_num], m_name))
@@ -298,7 +315,7 @@ class Worker(QtCore.QObject):
 
             # Reading and storing metadata file/s
             if browse_selected_mode in [1, 3]:
-                for list_num in xrange(len(browse_selected)):
+                for list_num in range(len(browse_selected)):
                     get_meta('MTL.txt', folder_files[list_num], list_num)
                     get_meta('BAND_META.txt', folder_files[list_num], list_num)
                 del list_num
@@ -355,13 +372,13 @@ class Worker(QtCore.QObject):
                     sensor_type[num] = None
 
             # Identify and put the sensor type
-            for num in xrange(len(raw_metadata_del)):
+            for num in range(len(raw_metadata_del)):
                 sensor_type_find(num)
 
             # Creating empty lists for metadata_required list according to sensor type
-            for num in xrange(len(sensor_type)):
+            for num in range(len(sensor_type)):
                 if sensor_type[num]:
-                    metadata_required[num] = [[] for y in xrange(11)]
+                    metadata_required[num] = [[] for y in range(11)]
                     # if sensor_type[num] == 'LC8':
                     #     metadata_required[num] = [[] for y in xrange(11)]
                     # elif sensor_type[num] == 'LE7':
@@ -461,7 +478,7 @@ class Worker(QtCore.QObject):
                         0.98344, 0.9834, 0.98337, 0.98335, 0.98333, 0.98331]
 
             # Getting metadata_required
-            for num in xrange(len(raw_metadata_del)):
+            for num in range(len(raw_metadata_del)):
                 if sensor_type[num]:
                     success, path, row, date, pass_time = 0, [], [], [], []
                     # def Meta_reqd_l2(i):
@@ -553,22 +570,22 @@ class Worker(QtCore.QObject):
                                 if sensor_type[num] in ['LC8']:
                                     # for Rad Mul Const
                                     raw_list = [None]
-                                    for item in xrange(i - 9, i + 2):
+                                    for item in range(i - 9, i + 2):
                                         raw_list.append(float(raw_metadata_del[num][0][item].split(' ')[-1]))
                                     metadata_required[num][5] = raw_list
                                     # for Rad Add Const
                                     raw_list = [None]
-                                    for item in xrange(i + 2, i + 13):
+                                    for item in range(i + 2, i + 13):
                                         raw_list.append(float(raw_metadata_del[num][0][item].split(' ')[-1]))
                                     metadata_required[num][6] = raw_list
                                     # for Ref Mul Const
                                     raw_list = [None]
-                                    for item in xrange(i + 13, i + 22):
+                                    for item in range(i + 13, i + 22):
                                         raw_list.append(float(raw_metadata_del[num][0][item].split(' ')[-1]))
                                     metadata_required[num][7] = raw_list
                                     # for Ref Add Const
                                     raw_list = [None]
-                                    for item in xrange(i + 22, i + 31):
+                                    for item in range(i + 22, i + 31):
                                         raw_list.append(float(raw_metadata_del[num][0][item].split(' ')[-1]))
                                     metadata_required[num][8] = raw_list
                                     success += 1
@@ -577,13 +594,13 @@ class Worker(QtCore.QObject):
                                 if sensor_type[num] in ['LE7']:
                                     # for Lmax
                                     raw_list = [None]
-                                    for item in xrange(i, i + 17, 2):
+                                    for item in range(i, i + 17, 2):
                                         raw_list.append(float(raw_metadata_del[num][0][item].split(' ')[-1]))
                                     raw_list.extend([None])
                                     metadata_required[num][5] = raw_list
                                     # for Lmin
                                     raw_list = [None]
-                                    for item in xrange(i + 1, i + 18, 2):
+                                    for item in range(i + 1, i + 18, 2):
                                         raw_list.append(float(raw_metadata_del[num][0][item].split(' ')[-1]))
                                     raw_list.extend([None])
                                     metadata_required[num][6] = raw_list
@@ -595,13 +612,13 @@ class Worker(QtCore.QObject):
                                 elif sensor_type[num] in ['LT5', 'LT4']:
                                     # for Lmax
                                     raw_list = [None]
-                                    for item in xrange(i, i + 13, 2):
+                                    for item in range(i, i + 13, 2):
                                         raw_list.append(float(raw_metadata_del[num][0][item].split(' ')[-1]))
                                     raw_list.extend([None, None])
                                     metadata_required[num][5] = raw_list
                                     # for Lmin
                                     raw_list = [None]
-                                    for item in xrange(i + 1, i + 14, 2):
+                                    for item in range(i + 1, i + 14, 2):
                                         raw_list.append(float(raw_metadata_del[num][0][item].split(' ')[-1]))
                                     raw_list.extend([None, None])
                                     metadata_required[num][6] = raw_list
@@ -613,13 +630,13 @@ class Worker(QtCore.QObject):
                                 elif sensor_type[num] in ['LM5', 'LM4']:
                                     # for Lmax
                                     raw_list = [None]
-                                    for item in xrange(i, i + 7, 2):
+                                    for item in range(i, i + 7, 2):
                                         raw_list.append(float(raw_metadata_del[num][0][item].split(' ')[-1]))
                                     raw_list.extend([None, None, None])
                                     metadata_required[num][5] = raw_list
                                     # for Lmin
                                     raw_list = [None]
-                                    for item in xrange(i + 1, i + 8, 2):
+                                    for item in range(i + 1, i + 8, 2):
                                         raw_list.append(float(raw_metadata_del[num][0][item].split(' ')[-1]))
                                     raw_list.extend([None, None, None])
                                     metadata_required[num][6] = raw_list
@@ -632,13 +649,13 @@ class Worker(QtCore.QObject):
                                 if sensor_type[num] in ['L3']:
                                     # for Lmax
                                     raw_list = [None, None]
-                                    for item in xrange(i + 4, i + 8):
+                                    for item in range(i + 4, i + 8):
                                         raw_list.append(float(raw_metadata_del[num][0][item].split(' ')[-1]))
                                     raw_list.extend([None, None, None])
                                     metadata_required[num][5] = raw_list
                                     # for Lmin
                                     raw_list = [None, None]
-                                    for item in xrange(i, i + 4):
+                                    for item in range(i, i + 4):
                                         raw_list.append(float(raw_metadata_del[num][0][item].split(' ')[-1]))
                                     raw_list.extend([None, None, None])
                                     metadata_required[num][6] = raw_list
@@ -650,13 +667,13 @@ class Worker(QtCore.QObject):
                                 elif sensor_type[num] in ['L4']:
                                     # for Lmax
                                     raw_list = [None, None]
-                                    for item in xrange(i + 3, i + 6):
+                                    for item in range(i + 3, i + 6):
                                         raw_list.append(float(raw_metadata_del[num][0][item].split(' ')[-1]))
                                     raw_list.extend([None, None, None, None])
                                     metadata_required[num][5] = raw_list
                                     # for Lmin
                                     raw_list = [None, None]
-                                    for item in xrange(i, i + 3):
+                                    for item in range(i, i + 3):
                                         raw_list.append(float(raw_metadata_del[num][0][item].split(' ')[-1]))
                                     raw_list.extend([None, None, None, None])
                                     metadata_required[num][6] = raw_list
@@ -669,13 +686,13 @@ class Worker(QtCore.QObject):
                                 if sensor_type[num] in ['LM3', 'LM2', 'LM1']:
                                     # for Lmax
                                     raw_list = [None, None, None, None]
-                                    for item in xrange(i, i + 7, 2):
+                                    for item in range(i, i + 7, 2):
                                         raw_list.append(float(raw_metadata_del[num][0][item].split(' ')[-1]))
                                     raw_list.extend([None, None])
                                     metadata_required[num][5] = raw_list
                                     # for Lmin
                                     raw_list = [None, None, None, None]
-                                    for item in xrange(i + 1, i + 8, 2):
+                                    for item in range(i + 1, i + 8, 2):
                                         raw_list.append(float(raw_metadata_del[num][0][item].split(' ')[-1]))
                                     raw_list.extend([None, None])
                                     metadata_required[num][6] = raw_list
@@ -741,34 +758,34 @@ class Worker(QtCore.QObject):
             # Create the empty lists to store all the band information (input and output)
             num = len(sensor_type)
 
-            bands=[[] for x in xrange(num)]
-            output_ra=[[] for x in xrange(num)]
-            output_re=[[] for x in xrange(num)]
-            output_extras=[[] for x in xrange(num)]
+            bands=[[] for x in range(num)]
+            output_ra=[[] for x in range(num)]
+            output_re=[[] for x in range(num)]
+            output_extras=[[] for x in range(num)]
 
-            for num in xrange(len(bands)):
-                output_extras[num]=[[] for y in xrange(3)]
+            for num in range(len(bands)):
+                output_extras[num]=[[] for y in range(3)]
                 if sensor_type[num] == 'LC8':
                     for list_name in [bands, output_ra, output_re]:
-                        list_name[num]=[[] for y in xrange(12)]
+                        list_name[num]=[[] for y in range(12)]
                 elif sensor_type[num] == 'LE7':
                     for list_name in [bands, output_ra, output_re]:
-                        list_name[num]=[[] for y in xrange(10)]
+                        list_name[num]=[[] for y in range(10)]
                 elif sensor_type[num] == 'LT4' or sensor_type[num] == 'LT5':
                     for list_name in [bands, output_ra, output_re]:
-                        list_name[num]=[[] for y in xrange(8)]
+                        list_name[num]=[[] for y in range(8)]
                 elif sensor_type[num] == 'LM4' or sensor_type[num] == 'LM5':
                     for list_name in [bands, output_ra, output_re]:
-                        list_name[num]=[[] for y in xrange(5)]
+                        list_name[num]=[[] for y in range(5)]
                 elif sensor_type[num] == 'LM1' or sensor_type[num] == 'LM2' or sensor_type[num] == 'LM3':
                     for list_name in [bands, output_ra, output_re]:
-                        list_name[num]=[[] for y in xrange(8)]
+                        list_name[num]=[[] for y in range(8)]
                 elif sensor_type[num] == 'L4':
                     for list_name in [bands, output_ra, output_re]:
-                        list_name[num]=[[] for y in xrange(5)]
+                        list_name[num]=[[] for y in range(5)]
                 elif sensor_type[num] == 'L3':
                     for list_name in [bands, output_ra, output_re]:
-                        list_name[num]=[[] for y in xrange(6)]
+                        list_name[num]=[[] for y in range(6)]
             del list_name
 
             # function which returns extent_status where, 0: no tile, 1: tile extent, 2: shape extent
@@ -783,7 +800,7 @@ class Worker(QtCore.QObject):
                 spatialRef_source = inLayer.GetSpatialRef()
 
                 minmax = 0
-                for feature_number in xrange(inLayer.GetFeatureCount()):
+                for feature_number in range(inLayer.GetFeatureCount()):
                     inFeature = inLayer.GetFeature(feature_number)
                     geom = inFeature.GetGeometryRef()
 
@@ -857,7 +874,7 @@ class Worker(QtCore.QObject):
 
             if if_clip == 1:
                 [spatialRef_source, extent] = Shape_extent(shape_path)
-                for num in xrange(len(clip_state)):
+                for num in range(len(clip_state)):
                     if sensor_type[num]:
                         b_name = None
                         file = 0
@@ -947,8 +964,7 @@ class Worker(QtCore.QObject):
                 if not len(quality_band[num]) and sensor_type[num] == 'LC8':
                     # Reading the BQA band to extract the exclude following values
                     bq_name_compile = re.compile('BQA.TIF')
-                    bq_name = "".join(filter(lambda x: bq_name_compile.search(x),
-                                             folder_files[num]))  # "".join(x for x in dir_list b_name_compile.search(x))
+                    bq_name = "".join([x for x in folder_files[num] if bq_name_compile.search(x)])  # "".join(x for x in dir_list b_name_compile.search(x))
                     if bq_name:
                         if browse_selected_mode == 1:
                             bq_filename = os.path.join(browse, folder_01, extract_path, browse_selected[num], bq_name)
@@ -986,8 +1002,7 @@ class Worker(QtCore.QObject):
                 if not len(bands[num][band_num]):
                     # Finding the full name of the perticular band file in the perticular folder
                     b_name_compile=re.compile(band_string)
-                    b_name="".join(filter(lambda x: b_name_compile.search(x),
-                                          folder_files[num]))  # "".join(x for x in dir_list b_name_compile.search(x))
+                    b_name="".join([x for x in folder_files[num] if b_name_compile.search(x)])  # "".join(x for x in dir_list b_name_compile.search(x))
 
                     # If a perticular band file exists in the given folder then
                     if b_name:
@@ -1874,7 +1889,8 @@ class Worker(QtCore.QObject):
                 expression = ' N'.join(expression.split('min'))
                 expression = ' X'.join(expression.split('max'))
 
-                expression = expression.decode()
+                # expression = expression.decode()
+                # expression = bytes(expression, 'utf-8')
                 expression = [token[1] for token in tokenize.generate_tokens(StringIO(expression).readline) if token[1]]
                 return ([c[0].encode() if c.encode().isalpha() else c.encode() for c in expression])
 
@@ -1882,7 +1898,7 @@ class Worker(QtCore.QObject):
             # ============== Outputs ===================
             # Using the function created and storing the data to variables as array
             self.progress.emit('>>>----------------------------------------------------------------------<<<\n')
-            for num in xrange(len(bands)):
+            for num in range(len(bands)):
                 if sensor_type[num] and clip_state[num] != 0:
                     self.progress.emit('\n>>>~~~~~\n')
                     if browse_selected_mode in [1,3]:
@@ -2154,7 +2170,10 @@ class Worker(QtCore.QObject):
                     for out,text in enumerate(custom_names):
                         if custom[out]:
                             self.progress.emit('\n>>> For custom output %s:\n'%text)
-                            expression = Expression(custom[out])
+                            # expression = Expression(custom[out])
+                            # custom[out] = ''.join(expression)
+
+                            expression = custom[out]
                             custom[out] = ''.join(expression)
 
                             min_index = [m.start() for m in re.finditer('N', custom[out])]
@@ -2355,7 +2374,7 @@ class Worker(QtCore.QObject):
             # On successful completion of all the porcesses
             finish_cond = 1
 
-        except Exception, e:
+        except Exception as e:
             # forward the exception upstream
             self.error.emit(e, traceback.format_exc())
 
@@ -2365,10 +2384,10 @@ class Worker(QtCore.QObject):
     #     self.killed = True
 
     finished = QtCore.pyqtSignal(object)
-    error = QtCore.pyqtSignal(Exception, basestring)
+    error = QtCore.pyqtSignal(Exception, str)
     progress = QtCore.pyqtSignal(str)
 
-class RSGIS:
+class RSGIS(object):
     """QGIS Plugin Implementation."""
 
     def __init__(self, iface):
@@ -2544,25 +2563,25 @@ class RSGIS:
 
         # ----------------------------------------------------------------------------------------------
         # Create dummy buttons for exporting data
-        self.dlg.label_browse = QtGui.QLabel()
-        self.dlg.label_browse_selected = QtGui.QLabel()
-        self.dlg.label_browse_selected_ext = QtGui.QLabel()
-        self.dlg.label_browse_selected_mode = QtGui.QLabel()
-        self.dlg.label_no_data = QtGui.QLabel()
+        self.dlg.label_browse = QLabel()
+        self.dlg.label_browse_selected = QLabel()
+        self.dlg.label_browse_selected_ext = QLabel()
+        self.dlg.label_browse_selected_mode = QLabel()
+        self.dlg.label_no_data = QLabel()
         self.dlg.label_no_data.setText('y')
-        self.dlg.label_ip_toa_ra = QtGui.QLabel()
+        self.dlg.label_ip_toa_ra = QLabel()
         self.dlg.label_ip_toa_ra.setText('0!@#$0!@#$0!@#$0!@#$0!@#$0!@#$0!@#$0!@#$0')
-        self.dlg.label_ip_toa_re = QtGui.QLabel()
+        self.dlg.label_ip_toa_re = QLabel()
         self.dlg.label_ip_toa_re.setText('0!@#$0!@#$0!@#$0!@#$0!@#$0!@#$0!@#$0!@#$0')
-        self.dlg.label_ip_extras = QtGui.QLabel()
+        self.dlg.label_ip_extras = QLabel()
         self.dlg.label_ip_extras.setText('0!@#$0!@#$0!@#$0!@#$0!@#$0')
-        self.dlg.label_exclude_window_state = QtGui.QLabel()
+        self.dlg.label_exclude_window_state = QLabel()
         self.dlg.label_exclude_window_state.setText('not_clicked')
-        self.dlg.label_shape_path = QtGui.QLabel()
+        self.dlg.label_shape_path = QLabel()
         self.dlg.label_shape_path.setText('not_selected')
-        self.dlg.label_clip_status = QtGui.QLabel()
+        self.dlg.label_clip_status = QLabel()
         self.dlg.label_clip_status.setText('0')
-        self.dlg.label_ip_exclude_following = QtGui.QLabel()
+        self.dlg.label_ip_exclude_following = QLabel()
         self.dlg.label_ip_exclude_following.setText(
             '0!@#$0!@#$0!@#$0!@#$0!@#$0!@#$0!@#$0!@#$0!@#$0!@#$0!@#$0!@#$0!@#$0!@#$0!@#$0')
 
@@ -2591,7 +2610,7 @@ class RSGIS:
         ip_toa_re = [int(x) for x in ((self.dlg.label_ip_toa_re.text()).split('!@#$'))]
         ip_extras = [int(x) for x in ((self.dlg.label_ip_extras.text()).split('!@#$'))]
 
-        custom, custom_names = [[] for i in xrange(4)], [[] for i in xrange(4)]
+        custom, custom_names = [[] for i in range(4)], [[] for i in range(4)]
         custom[0], custom[1], custom[2], custom[3] = str(self.dlg.le_ex_01.text()), str(self.dlg.le_ex_02.text()), str(
             self.dlg.le_ex_03.text()), str(self.dlg.le_ex_04.text())
         custom_names[0], custom_names[1], custom_names[2], custom_names[3] = str(self.dlg.le_output_01.text()), str(
@@ -2835,23 +2854,27 @@ class RSGIS:
         self.dlg.label_browse_selected_mode.setText(str(browse_selected_mode))
 
     def Pb_browse(self, browse_selected_mode):
+
+
         # For terminal outputs
         logger = self.dlg.tb_terminal
         global browse_raw, browse_selected_ext, browse, browse_selected
         if browse_selected_mode in [1]:
-            browse_raw_obj=QtGui.QFileDialog.getOpenFileNames(self.dlg, "Select Compressed File/s", '', '*.tar.gz *.zip')
+            browse_raw_obj=QFileDialog.getOpenFileNames(self.dlg, "Select Compressed File/s", '', '*.tar.gz *.zip')
+            browse_raw_obj = browse_raw_obj[0]
             if browse_raw_obj:
                 browse_raw = []
                 for path in browse_raw_obj:
                     browse_raw.append(str(path))
         elif browse_selected_mode in [2]:
-            browse_raw_obj=QtGui.QFileDialog.getOpenFileNames(self.dlg, "Select Extracted Files", '', '*.TIF *.tif *.txt')
+            browse_raw_obj=QFileDialog.getOpenFileNames(self.dlg, "Select Extracted Files", '', '*.TIF *.tif *.txt')
+            browse_raw_obj = browse_raw_obj[0]
             if browse_raw_obj:
                 browse_raw = []
                 for path in browse_raw_obj:
                     browse_raw.append(str(path))
         elif browse_selected_mode in [3]:
-            browse_raw_obj=str(QtGui.QFileDialog.getExistingDirectory(self.dlg, "Select Folder"))
+            browse_raw_obj=str(QFileDialog.getExistingDirectory(self.dlg, "Select Folder"))
             browse_raw = browse_raw_obj
             if browse_raw_obj:
                 browse=browse_raw[:]
@@ -2908,7 +2931,8 @@ class RSGIS:
         # For terminal outputs
         logger = self.dlg.tb_terminal
         global shape_path
-        shape_path_obj = QtGui.QFileDialog.getOpenFileNames(self.dlg, "Select area of interest shape file", '', '*.shp')
+        shape_path_obj = QFileDialog.getOpenFileNames(self.dlg, "Select area of interest shape file", '', '*.shp')
+        shape_path_obj = shape_path_obj[0]
         if shape_path_obj:
             shape_path = []
             for path in shape_path_obj:
