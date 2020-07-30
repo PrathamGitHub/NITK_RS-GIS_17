@@ -23,7 +23,7 @@
 
 import os
 
-#from qgis.PyQt import QtGui, uic
+from qgis.PyQt import QtGui, uic
 from qgis.core import *
 from qgis.PyQt import *
 from qgis.PyQt.QtCore import *
