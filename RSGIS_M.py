@@ -20,13 +20,13 @@
  *                                                                         *
  ***************************************************************************/
 """
-from __future__ import absolute_import
-from future import standard_library
-standard_library.install_aliases()
-from builtins import str
-from builtins import zip
-from builtins import range
-from builtins import object
+#from __future__ import absolute_import
+#from future import standard_library
+#standard_library.install_aliases()
+#from builtins import str
+#from builtins import zip
+#from builtins import range
+#from builtins import object
 
 from qgis.PyQt.QtCore import *
 from qgis.PyQt.QtWidgets import *
@@ -41,7 +41,7 @@ from .RSGIS_M_dialog import RSGISDialog
 import os.path
 
 from qgis.PyQt import *
-# rom qgis.PyQt import QtCore, QtGui
+# from qgis.PyQt import QtCore, QtGui
 
 import time
 # import logging
@@ -76,7 +76,7 @@ ip_extras=[0] * 6
 ip_exclude_following=[0] * 16
 
 class Worker(QtCore.QObject):
-    '''Example worker for calculating the total area of all features in a layer'''
+
     def __init__(self, ip_user, custom, custom_names, browse, browse_selected_obj, browse_selected_ext_obj, browse_selected_mode, shape_path, if_clip):
         QtCore.QObject.__init__(self)
         # if isinstance(layer, QgsVectorLayer) is False:
@@ -132,9 +132,7 @@ class Worker(QtCore.QObject):
             # -----------------------------------------------------------------------------------------------------
             # Create a NITK_RSGIS_******* folder i.e. folder_01
             folder_01='NITK_RSGIS_%s' % (time.strftime("%Y%m%d_") + time.strftime("%H%M%S"))
-            self.progress.emit('%s' % os.path.join(browse, folder_01))
             if not os.path.exists(os.path.join(browse, folder_01)):
-
                 os.makedirs(os.path.join(browse, folder_01))
                 # print("%s is created in directory: %s" % (folder_01, browse))
             else:
@@ -150,7 +148,7 @@ class Worker(QtCore.QObject):
             self.progress.emit('Folder "%s" created in (%s) directory\n' %(folder_01, browse))
 
             # Open the current working directory
-            wb.open(os.path.join(browse, folder_01))
+            wb.open(os.path.join(browse, folder_01).replace('/','\\'))
 
             # ------------------------------------------------------------------------------------------------------
             # In case of selection mode 1 (compressed file/s mode) extracting the compressed files and listing their names
@@ -301,7 +299,7 @@ class Worker(QtCore.QObject):
             # Create function to read metadata file
             def get_meta(meta_text, dir_list, list_num=0):
                 m_name_compile=re.compile(meta_text)
-                m_name="".join([x for x in dir_list if m_name_compile.search(x)])
+                m_name="".join(filter(lambda x: m_name_compile.search(x), dir_list))
                 if len(m_name) != 0:
                     if browse_selected_mode == 1:
                         m_handle=open(os.path.join(browse, folder_01, extract_path, browse_selected[list_num], m_name))
@@ -964,7 +962,8 @@ class Worker(QtCore.QObject):
                 if not len(quality_band[num]) and sensor_type[num] == 'LC8':
                     # Reading the BQA band to extract the exclude following values
                     bq_name_compile = re.compile('BQA.TIF')
-                    bq_name = "".join([x for x in folder_files[num] if bq_name_compile.search(x)])  # "".join(x for x in dir_list b_name_compile.search(x))
+                    bq_name = "".join(filter(lambda x: bq_name_compile.search(x),
+                                             folder_files[num]))  # "".join(x for x in dir_list b_name_compile.search(x))
                     if bq_name:
                         if browse_selected_mode == 1:
                             bq_filename = os.path.join(browse, folder_01, extract_path, browse_selected[num], bq_name)
@@ -983,10 +982,10 @@ class Worker(QtCore.QObject):
                             clipped_name = os.path.join(browse, folder_01, clipped_path, browse_selected[num], 'clip_'+bq_name)
 
                         if clip_state[num] == 1:
-                            warp = 'gdalwarp -q -cutline %s %s %s' %(shape_path, bq_filename, clipped_name)
+                            warp = 'gdalwarp -q -cutline "%s" "%s" "%s"' %(shape_path, bq_filename, clipped_name)
                         else:
-                            warp = 'gdalwarp -q -cutline %s -crop_to_cutline %s %s' %(shape_path, bq_filename, clipped_name)
-                        os.system(warp)
+                            warp = 'gdalwarp -q -cutline "%s" -crop_to_cutline "%s" "%s"' %(shape_path, bq_filename, clipped_name)
+                        os.popen(warp).read()
                         # logger.append('Clipping file \n    "%s"\n' % (os.path.split(bq_filename)[1]))-----------------
                         if os.path.exists(clipped_name):
                             bq_filename = clipped_name
@@ -1002,7 +1001,8 @@ class Worker(QtCore.QObject):
                 if not len(bands[num][band_num]):
                     # Finding the full name of the perticular band file in the perticular folder
                     b_name_compile=re.compile(band_string)
-                    b_name="".join([x for x in folder_files[num] if b_name_compile.search(x)])  # "".join(x for x in dir_list b_name_compile.search(x))
+                    b_name="".join(filter(lambda x: b_name_compile.search(x),
+                                          folder_files[num]))  # "".join(x for x in dir_list b_name_compile.search(x))
 
                     # If a perticular band file exists in the given folder then
                     if b_name:
@@ -1025,11 +1025,11 @@ class Worker(QtCore.QObject):
 
                             if not os.path.exists(clipped_name):
                                 if clip_state[num] == 1:
-                                    warp = 'gdalwarp -q -cutline %s %s %s' % (shape_path, filename, clipped_name)
+                                    warp = 'gdalwarp -q -cutline "%s" "%s" "%s"' % (shape_path, filename, clipped_name)
                                 else:
-                                    warp = 'gdalwarp -q -cutline %s -crop_to_cutline %s %s' % (
+                                    warp = 'gdalwarp -q -cutline "%s" -crop_to_cutline "%s" "%s"' % (
                                     shape_path, filename, clipped_name)
-                                os.system(warp)
+                                os.popen(warp).read()
                                 # logger.append('Clipping file\n    "%s"\n' % (os.path.split(filename)[1]))-----------------
 
                             if os.path.exists(clipped_name):
@@ -2174,24 +2174,33 @@ class Worker(QtCore.QObject):
                             # custom[out] = ''.join(expression)
 
                             expression = custom[out]
-                            custom[out] = ''.join(expression)
 
-                            min_index = [m.start() for m in re.finditer('N', custom[out])]
+                            expression = expression.lower().replace(" ", "").replace("min", "AB").replace("max", "YZ")
 
-                            for n, i in enumerate(min_index):
-                                a = custom[out].__getslice__(0, i - 1 + n)
-                                b = custom[out].__getslice__(i - 1 + n, i + n)
-                                c = custom[out].__getslice__(i + 1 + n, len(custom[out]) + n)
-                                custom[out] = '%sA%sB%s' % (a, b, c)
+                            ex01 = []
 
-                            max_index = [m.start() for m in re.finditer('X', custom[out])]
+                            for n, i in enumerate(expression):
+                                if n == 0:
+                                    if i.isalpha() and i.islower(): ex01.append(i)
+                                    if not i.isalpha():
+                                        ex01.append(i)
+                                        ex01.append(expression[n + 1])
+                                elif n == len(expression) - 1:
+                                    if not (i.isalpha() and i.islower()): ex01.append(i)
+                                else:
+                                    if i.isalpha() and i.isupper(): ex01.append(i)
+                                    if not i.isalpha():
+                                        ex01.append(i)
+                                        ex01.append(expression[n + 1])
 
-                            for n, i in enumerate(max_index):
-                                a = custom[out].__getslice__(0, i - 1 + n)
-                                b = custom[out].__getslice__(i - 1 + n, i + n)
-                                c = custom[out].__getslice__(i + 1 + n, len(custom[out]) + n)
-                                custom[out] = '%sY%sZ%s' % (a, b, c)
+                            for n, i in enumerate(ex01):
+                                if i in ["A", "Y"]:
+                                    ex01[n] = ex01[n - 1]
+                                    ex01[n - 1] = i
 
+                            expression = ''.join(ex01)
+                                    
+                            custom[out] = expression
 
                             custom_bands_name = []
                             [custom_bands_name.append(i) for i in expression if i.isalpha() and i.islower()]
@@ -2243,8 +2252,13 @@ class Worker(QtCore.QObject):
                                     eval_exp.append(word+'!@#$') if word.isalpha() else eval_exp.append(word)
                                 custom_bands_name_new = [a+'!@#$' for a in custom_bands_name if a.isalpha()]
 
-                                for i,j in zip(custom_bands_name_new, custom_bands_one):
-                                    eval_exp = [w.replace(i, j) for w in eval_exp]
+                                if len(custom_bands_name_new) != len(custom_bands_one): continue
+                                
+                                for i in range(len(custom_bands_one)):
+                                    eval_exp = [w.replace(custom_bands_name_new[i], custom_bands_one[i]) for w in eval_exp]
+
+                                #for i,j in zip(custom_bands_name_new, custom_bands_one):
+                                #    eval_exp = [w.replace(i, j) for w in eval_exp]
                                 eval_exp = ''.join(eval_exp)
 
                                 eval_exp = eval_exp.replace('A!@#$', 'np.nanmin(')
@@ -2283,8 +2297,13 @@ class Worker(QtCore.QObject):
                                 for word in custom[out]:
                                     eval_exp.append(word + '!@#$') if word.isalpha() else eval_exp.append(word)
 
-                                for i,j in zip(custom_bands_name_new, custom_bands_one):
-                                    eval_exp = [w.replace(i, j) for w in eval_exp]
+                                if len(custom_bands_name_new) != len(custom_bands_one): continue
+                                
+                                for i in range(len(custom_bands_one)):
+                                    eval_exp = [w.replace(custom_bands_name_new[i], custom_bands_one[i]) for w in eval_exp]
+
+                                #for i,j in zip(custom_bands_name_new, custom_bands_one):
+                                #    eval_exp = [w.replace(i, j) for w in eval_exp]
                                 eval_exp = ''.join(eval_exp)
 
                                 eval_exp = eval_exp.replace('A!@#$', 'np.nanmin(')
@@ -2314,8 +2333,13 @@ class Worker(QtCore.QObject):
                                 for word in custom[out]:
                                     eval_exp.append(word + '!@#$') if word.isalpha() else eval_exp.append(word)
 
-                                for i,j in zip(custom_bands_name_new, custom_bands_two):
-                                    eval_exp = [w.replace(i, j) for w in eval_exp]
+                                if len(custom_bands_name_new) != len(custom_bands_one): continue
+                                
+                                for i in range(len(custom_bands_one)):
+                                    eval_exp = [w.replace(custom_bands_name_new[i], custom_bands_one[i]) for w in eval_exp]
+
+                                #for i,j in zip(custom_bands_name_new, custom_bands_one):
+                                #    eval_exp = [w.replace(i, j) for w in eval_exp]
                                 eval_exp = ''.join(eval_exp)
 
                                 eval_exp = eval_exp.replace('A!@#$', 'np.nanmin(')
@@ -2345,7 +2369,6 @@ class Worker(QtCore.QObject):
                                 self.progress.emit('Wrote file\n    "%s"' % (os.path.split(write_text)[1]))
                                 gdalo(write_text, spatial_ref[num], output, 1, 6)
                                 output = []
-
 
                     # Remove the quality band data
                     if sensor_type[num] == 'LC8' and sum(ip_user[4]) > 0:
@@ -2854,8 +2877,6 @@ class RSGIS(object):
         self.dlg.label_browse_selected_mode.setText(str(browse_selected_mode))
 
     def Pb_browse(self, browse_selected_mode):
-
-
         # For terminal outputs
         logger = self.dlg.tb_terminal
         global browse_raw, browse_selected_ext, browse, browse_selected
@@ -2905,15 +2926,18 @@ class RSGIS(object):
                 logger.append('    ------ None ------')
             logger.append('')
             logger.append('>>> Please make sure:\n'
-                         '         1. There is enough storage space in the current working directory\n'
-                         '         2. There is no blank space in the current working directory address\n'
-                         '\nStatus:')
-            if ' ' in browse:
-                logger.append('            :-( Your current working directory address consists blank space/s\n')
-            else:
-                logger.append('            :-) Your current working directory address does not consist blank space\n')
+                          '    > There is enough storage space in the current working directory\n')
+            # logger.append('>>> Please make sure:\n'
+            #              '         1. There is enough storage space in the current working directory\n'
+            #              '         2. There is no blank space in the current working directory address\n'
+            #              '\nStatus:')
+            # if ' ' in browse:
+            #     logger.append('            :-( Your current working directory address consists blank space/s\n')
+            # else:
+            #     logger.append('            :-) Your current working directory address does not consist blank space\n')
 
-            logger.append('*Hint-\nSelect all the desired outputs:\n'
+            logger.append('*Hint-\n'
+                          '    > Select all the desired outputs:\n'
                           '    > Select AoI shape file if you want to clip the data to your polygon shape file(.shp)\n'
                           '    > For Landsat 8 data select if you want to exclude cloud and cirrus pixels for calculation\n'
                           '    > If you are intrested in some custom indices, write the name of the index and index band expression\n\n'
