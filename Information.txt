@@ -1,0 +1,65 @@
+An Attempt to Bridg the Gap between Potential and Actual Use of Satellite Data
+
+Remote Sensing and GIS is a tool which is now an integrated part of countless professions and scientific
+studies. Millions of decisions are now powered by the use of RS&GIS techniques. RS&GIS is a dynamic field
+which is evolving very fast. It is as complex as its application. With its speed of evolution and complexity
+involved, we cannot expect every professional working in different fields to be up to date with the
+knowledge related to the field RS&GIS.
+
+Satellites observe the earth surface, below it, also the atmosphere every second of the day. Sensors fixed on
+board on satellites captures the radiations reflected or emitted in different wavelengths. But the signals
+received by the sensors on board are not only the function of surface properties of the surface reflecting or
+emitting the radiations but also are affected by atmosphere through which they travel and sensor
+characteristics of the sensors which capture this signals. Sensor characteristics being well known can be dealt
+with systematically. But atmospheric effect varies constantly. Most of the satellites capture data using passive
+remote sensing i.e. sun’s radiations are used as the source of energy. But the distance between the earth and the
+sun varied with the day and also the sun’s illumination angle varies with the part of the day. This all involves
+much more variability in the signals received by the sensors. This all effects are required to be considered
+before using the satellite data for any of its application. Therefore, before the application of the satellite data
+digital number values, it is always recommended to convert this digital numbers (DNs) into absolute
+radiance and/or reflectance unit to have uniformity in the data used which eliminates the variability due
+to sensor characteristics as well as atmospheric effects.
+
+It is unlike that the satellite data in a single wavelength band is used explicitly, almost every time
+multiple bands are used in combination to produce some useful outputs. Some of the standard and mostly
+used band combination outputs are True Color Composite (TCC) image, different indices like Normalized
+Difference Vegetation Index (NDVI) etc.
+
+Air temperature is a continuous phenomenon which varies with space and time. Air temperature is measured at
+meteorological stations every day and a maximum and a minimum temperature of the day is the output. This
+discreet point observation of the air temperature does not produce the representative air temperature variation
+along the space and time. Many of the scientific studies have linked Air temperature with the Land Surface
+Temperature (LST). Land Surface Temperature (LST) is the temperature of the earth’s surface. Although LST
+has a direct impact on air temperature they both are different. But the advantage of retrieving the LST
+values form satellite data and then linking it with air temperature is the easy availability of satellite data
+in good temporal and spatial resolution which produces results in continuous nature over large spatial
+extent. There are various algorithms to retrieve LST values from satellite Thermal bands. Some of the
+algorithms are the radiative transfer equation, the mono-window algorithm etc. but to use these algorithms it
+needs the input of ground truth data and other land use related inputs.
+
+Because of the above-discussed facts, there exists a gap between potential applicability and effectiveness
+of the use of the satellite data and the actual use. This gap is bridged with this study. In this study, a QGIS
+plugin (‘RS&GIS’) and a standalone application (for windows users) are developed which is being used
+by a variety of the professional from various backgrounds and has become a regularly used tool of most
+of the researchers. The only prerequisite to using this tool is the raw satellite data but no other
+knowledge. The tool operates on Landsat (1to8) level 1 data (free available), LISS III (free available) and
+LISS IV data to produce absolute radiance and reflectance band values which can then be directly used for
+any further application. After conversion of the DN into absolute radiance and reflectance unit, the tool gives
+functionality for standard band combination outputs like True Color Composite (TCC), False Color Composite
+(FCC), Normalized Difference Vegetation Index (NDVI), Normalized Difference Water Index (NDWI), At-
+Satellite Brightness Temperature and Land Surface Temperature (LST). The tool covers almost any band
+combination by use of its Custom Band Expression/s function where the user is given functionality to input
+desired band combination expression. The presence of clouds and cirrus in the data not only affect the outputs
+visually but it induces ambiguity in the results. For Landsat 8 data users, the tool provides functionality to
+remove features like clouds and cirrus from the data. The option is given to the user to clip the data to
+the area of interest shape file. Most of the times when work is carried out on areas of large spatial extent,
+where perhaps tens of satellite image tiles have to be processed and analyzed, this tool provides functionality
+for batch processing which saves a considerable amount of time.
+
+The tool can be significant since it is opening an opportunity to many researchers to get various outputs
+also the LST map easily and they can apply them in a variety of research. Results obtained are reliable.
+The use of the tool will result in increased efficiency and effectiveness in performing preprocessing operations
+and deriving useful outputs from Landsat and LISS data products. It also will result in reduced computational
+time and efforts and minimized possibilities of human error. This study shows that successful
+implementation of this study and regular use of this tool will result in bridging the gap between the
+potential and actual use of the satellite data.
