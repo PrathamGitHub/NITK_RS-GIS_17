@@ -1,4 +1,4 @@
-# This file contains metadata for your plugin. Since 
+# This file contains metadata for the plugin. Since 
 # version 2.0 of QGIS this is the proper way to supply 
 # information about a plugin. The old method of 
 # embedding metadata in __init__.py will 
@@ -10,25 +10,25 @@
 name=RS&GIS
 qgisMinimumVersion=3.0
 description=Operates on raw satellite data (Landsat 1-8 & LISS) to produce standard outputs and user defined custom band outputs
-version=1.0
+version=1.1
 author=Prathamesh Barane, G S Dwarakish
 email=prathamesh.barane@gmail.com
 
 about=Tool performs well defined algorithms on raw satellite data to produce popularly used outputs like > Land Surface Temperature (LST) > At. Satellite Brightness Temperature > Normalized Difference Vegetation Index (NDVI) > Normalized Difference Water Index (NDWI) > True Color Composite (TCC) > Flase Color Composite (FCC) > At Satellite Reflectance of available bands > At Satellite Radiance of available bands > Other user defined custom band outputs
 
-tracker=https://github.com/PrathamGitHub/NITK_RS-GIS_17/issues
-repository=https://github.com/PrathamGitHub/NITK_RS-GIS_17.git
+tracker=https://github.com/PrathamGitHub/NITK_RS-GIS_1.1/issues
+repository=https://github.com/PrathamGitHub/NITK_RS-GIS_1.1.git
 # End of mandatory metadata
 
 # Recommended items:
 
 # Uncomment the following line and add your changelog:
-changelog= minor changes
+changelog= minor bugs resolved
 
 # Tags are comma separated with spaces allowed
 tags= LISS, Landsat, LST, Land Surface Temperature, brightness temperature, reflectance, radiance, NDVI, NDWI, index, vegetation, water index, TCC, FCC, color composite, cloud remove
 
-homepage= https://github.com/PrathamGitHub/NITK_RS-GIS_17/blob/master/Information.pdf
+homepage= https://github.com/PrathamGitHub/NITK_RS-GIS_17/blob/master/Information.txt
 category=Plugins
 icon=icon.png
 # experimental flag
@@ -36,4 +36,3 @@ experimental=False
 
 # deprecated flag (applies to the whole plugin, not just a single version)
 deprecated=False
-
