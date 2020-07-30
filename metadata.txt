@@ -16,8 +16,8 @@ email=prathamesh.barane@gmail.com
 
 about=Tool performs well defined algorithms on raw satellite data to produce popularly used outputs like > Land Surface Temperature (LST) > At. Satellite Brightness Temperature > Normalized Difference Vegetation Index (NDVI) > Normalized Difference Water Index (NDWI) > True Color Composite (TCC) > Flase Color Composite (FCC) > At Satellite Reflectance of available bands > At Satellite Radiance of available bands > Other user defined custom band outputs
 
-tracker=https://github.com/PrathamGitHub/NITK_RS-GIS_1.1/issues
-repository=https://github.com/PrathamGitHub/NITK_RS-GIS_1.1.git
+tracker=https://github.com/PrathamGitHub/NITK_RS-GIS_17/issues
+repository=https://github.com/PrathamGitHub/NITK_RS-GIS_17.git
 # End of mandatory metadata
 
 # Recommended items:
