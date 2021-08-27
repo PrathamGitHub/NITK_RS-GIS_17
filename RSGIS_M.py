@@ -54,8 +54,7 @@ from osgeo import gdal
 import numpy as np
 import os
 from osgeo import ogr, osr
-import gdal
-from gdalconst import *
+from osgeo.gdalconst import *
 import multiprocessing
 from io import StringIO
 import tokenize
