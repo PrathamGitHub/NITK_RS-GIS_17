@@ -22,13 +22,9 @@
 """
 
 import os
+from qgis.PyQt import uic
+from PyQt5.QtWidgets import QDialog
 
-from qgis.PyQt import QtGui, uic
-from qgis.core import *
-from qgis.PyQt import *
-from qgis.PyQt.QtCore import *
-from qgis.PyQt.QtWidgets import *
-from qgis.PyQt.QtGui import *
 
 FORM_CLASS, _ = uic.loadUiType(os.path.join(
     os.path.dirname(__file__), 'RSGIS_M_dialog_base.ui'))

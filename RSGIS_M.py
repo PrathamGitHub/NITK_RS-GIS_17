@@ -20,28 +20,16 @@
  *                                                                         *
  ***************************************************************************/
 """
-#from __future__ import absolute_import
-#from future import standard_library
-#standard_library.install_aliases()
-#from builtins import str
-#from builtins import zip
-#from builtins import range
-#from builtins import object
 
-from qgis.PyQt.QtCore import *
-from qgis.PyQt.QtWidgets import *
-from qgis.PyQt.QtGui import *
-# from qgis.PyQt.QtCore import QSettings, QTranslator, qVersion, QCoreApplication
-# from qgis.PyQt.QtWidgets import QAction
-# from qgis.PyQt.QtGui import QIcon
-# Initialize Qt resources from file resources.py
+from qgis.PyQt import QtCore
+from PyQt5.QtCore import QSettings, QCoreApplication
+from PyQt5.QtGui import QIcon
+from PyQt5.QtWidgets import QAction, QLabel, QFileDialog
+
 from . import resources
 # Import the code for the dialog
 from .RSGIS_M_dialog import RSGISDialog
 import os.path
-
-from qgis.PyQt import *
-# from qgis.PyQt import QtCore, QtGui
 
 import time
 # import logging
@@ -54,15 +42,15 @@ from osgeo import gdal
 import numpy as np
 import os
 from osgeo import ogr, osr
-from osgeo.gdalconst import *
+
+from osgeo.gdalconst import GA_ReadOnly
+
 import multiprocessing
 from io import StringIO
 import tokenize
 # import threading
 import webbrowser as wb
 import traceback
-from qgis.core import *
-
 
 
 # Create a lock for multiprocess
@@ -1402,7 +1390,7 @@ class Worker(QtCore.QObject):
 
                 # Output to logger
                 if write_text[0] != None:
-                    self.progress.emit('Wrote file\n    "%s"' % (os.path.split(write_text[0])[1]))
+                    self.progress.emit('Completed file\n    "%s"' % (os.path.split(write_text[0])[1]))
                     if band_write_info[1] == 2:
                         self.progress.emit('    "%s"' % (os.path.split(write_text[1])[1]))
                 else:
@@ -1590,7 +1578,7 @@ class Worker(QtCore.QObject):
                           [output_ra[num][r_info[1]], output_ra[num][g_info[1]], output_ra[num][b_info[1]]], 3, 2)
 
                     # Output to logger
-                    self.progress.emit('Wrote file\n    "%s"' % (os.path.split(write_text)[1]))
+                    self.progress.emit('Completed file\n    "%s"' % (os.path.split(write_text)[1]))
                 else:
                     # Output to logger
                     self.progress.emit(':-( Unavailable')
@@ -1649,7 +1637,7 @@ class Worker(QtCore.QObject):
                     gdalo(write_text, spatial_ref[num],
                           [output_ra[num][n_info[1]], output_ra[num][r_info[1]], output_ra[num][g_info[1]]], 3, 2)
                     # Output to logger
-                    self.progress.emit('Wrote file\n    "%s"' % (os.path.split(write_text)[1]))
+                    self.progress.emit('Completed file\n    "%s"' % (os.path.split(write_text)[1]))
 
                 elif sensor_type[num] in ['LM1', 'LM2', 'LM3', 'LM4', 'LM5']:
                     radiance_cal(num, 'g')
@@ -1678,7 +1666,7 @@ class Worker(QtCore.QObject):
                     gdalo(write_text, spatial_ref[num],
                           [output_ra[num][n_info[1]], output_ra[num][r_info[1]], output_ra[num][g_info[1]]], 3, 2)
                     # Output to logger
-                    self.progress.emit('Wrote file\n    "%s"' % (os.path.split(write_text)[1]))
+                    self.progress.emit('Completed file\n    "%s"' % (os.path.split(write_text)[1]))
                 else:
                     # Output to logger
                     self.progress.emit(':-( Unavailable')
@@ -1715,7 +1703,7 @@ class Worker(QtCore.QObject):
                                                   metadata_required[num][10] + 'NDWI.TIF')
                     gdalo(write_text, spatial_ref[num], ndwi, 1, 6)
                     # Output to logger
-                    self.progress.emit('Wrote file\n    "%s"' % (os.path.split(write_text)[1]))
+                    self.progress.emit('Completed file\n    "%s"' % (os.path.split(write_text)[1]))
                     '''
                     with rasterio.open(write_text, 'w', count=1, dtype='float64', **spatial_ref[num]) as bh:
                         bh.write(ndwi, 1)
@@ -1740,7 +1728,7 @@ class Worker(QtCore.QObject):
                     # Writing the output
                     gdalo(write_text, spatial_ref[num], ndwi, 1, 6)
                     # Output to logger
-                    self.progress.emit('Wrote file\n    "%s"' % (os.path.split(write_text)[1]))
+                    self.progress.emit('Completed file\n    "%s"' % (os.path.split(write_text)[1]))
                     '''
                     with rasterio.open(write_text, 'w', count=1, dtype='float64', **spatial_ref[num]) as bh:
                         bh.write(ndwi, 1)
@@ -1877,7 +1865,7 @@ class Worker(QtCore.QObject):
                     band_data_del(num, 'A')
 
                     # Output to logger
-                    self.progress.emit('Wrote file\n    "%s"' % (os.path.split(write_text[0])[1]))
+                    self.progress.emit('Completed file\n    "%s"' % (os.path.split(write_text[0])[1]))
                     if t_info[0] == 2:
                         self.progress.emit('    "%s"' % (os.path.split(write_text[1])[1]))
                 else:
@@ -2178,12 +2166,15 @@ class Worker(QtCore.QObject):
 
                             ex01 = []
 
-                            for n, i in enumerate(expression):
+                            n = 0
+                            while n < len(expression):
+                                i = expression[n]
                                 if n == 0:
                                     if i.isalpha() and i.islower(): ex01.append(i)
                                     if not i.isalpha():
                                         ex01.append(i)
                                         ex01.append(expression[n + 1])
+                                        n += 1
                                 elif n == len(expression) - 1:
                                     if not (i.isalpha() and i.islower()): ex01.append(i)
                                 else:
@@ -2191,6 +2182,22 @@ class Worker(QtCore.QObject):
                                     if not i.isalpha():
                                         ex01.append(i)
                                         ex01.append(expression[n + 1])
+                                        n += 1
+                                n += 1
+
+                            # for n, i in enumerate(expression):
+                            #     if n == 0:
+                            #         if i.isalpha() and i.islower(): ex01.append(i)
+                            #         if not i.isalpha():
+                            #             ex01.append(i)
+                            #             ex01.append(expression[n + 1])
+                            #     elif n == len(expression) - 1:
+                            #         if not (i.isalpha() and i.islower()): ex01.append(i)
+                            #     else:
+                            #         if i.isalpha() and i.isupper(): ex01.append(i)
+                            #         if not i.isalpha():
+                            #             ex01.append(i)
+                            #             ex01.append(expression[n + 1])
 
                             for n, i in enumerate(ex01):
                                 if i in ["A", "Y"]:
@@ -2283,7 +2290,7 @@ class Worker(QtCore.QObject):
                                     write_text = os.path.join(browse, folder_01, output_path,
                                                               metadata_required[num][10] + '%s.TIF'%text)
 
-                                self.progress.emit('Wrote file\n    "%s"' % (os.path.split(write_text)[1]))
+                                self.progress.emit('Completed file\n    "%s"' % (os.path.split(write_text)[1]))
                                 gdalo(write_text, spatial_ref[num], output, 1, 6)
                                 output = []
 
@@ -2323,7 +2330,7 @@ class Worker(QtCore.QObject):
                                     write_text = os.path.join(browse, folder_01, output_path,
                                                               metadata_required[num][10] + '%s_01.TIF'%text)
 
-                                self.progress.emit('Wrote file\n    "%s"' % (os.path.split(write_text)[1]))
+                                self.progress.emit('Completed file\n    "%s"' % (os.path.split(write_text)[1]))
                                 gdalo(write_text, spatial_ref[num], output, 1, 6)
                                 output=[]
 
@@ -2365,7 +2372,7 @@ class Worker(QtCore.QObject):
                                     write_text = os.path.join(browse, folder_01, output_path,
                                                               metadata_required[num][10] + '%s_02.TIF'%text)
 
-                                self.progress.emit('Wrote file\n    "%s"' % (os.path.split(write_text)[1]))
+                                self.progress.emit('Completed file\n    "%s"' % (os.path.split(write_text)[1]))
                                 gdalo(write_text, spatial_ref[num], output, 1, 6)
                                 output = []
 
@@ -2671,6 +2678,7 @@ class RSGIS(object):
 
         worker.progress.connect(self.showmsg)
 
+        #worker.run()
         thread.started.connect(worker.run)
         thread.start()
         self.thread = thread
@@ -2743,16 +2751,16 @@ class RSGIS(object):
         global ip_exclude_following
 
         if self.dlg.cb_clouds.checkState() == 0 and self.dlg.cb_cirrus.checkState() == 0 :
-            logger.append('Deselected: Clouds and cirrus removal for Landsat8 data.')
+            logger.append('Deselected: Clouds and cirrus removal for Landsat8 data')
             ip_exclude_following[0], ip_exclude_following[2] = 0, 0
         elif self.dlg.cb_clouds.checkState() == 2 and self.dlg.cb_cirrus.checkState() == 2 :
-            logger.append('Selected: Clouds and cirrus removal for Landsat8 data.')
+            logger.append('Selected: Clouds and cirrus removal for Landsat8 data')
             ip_exclude_following[0], ip_exclude_following[2] = 1, 1
         elif self.dlg.cb_clouds.checkState() == 2 and self.dlg.cb_cirrus.checkState() == 0 :
-            logger.append('Selected: Clouds removal for Landsat8 data.')
+            logger.append('Selected: Clouds removal for Landsat8 data')
             ip_exclude_following[0], ip_exclude_following[2] = 0, 1
         elif self.dlg.cb_clouds.checkState() == 0 and self.dlg.cb_cirrus.checkState() == 2 :
-            logger.append('Selected: Clouds and cirrus removal for Landsat8 data.')
+            logger.append('Selected: Clouds and cirrus removal for Landsat8 data')
             ip_exclude_following[0], ip_exclude_following[2] = 1, 1
 
         # Exporting the data
