@@ -150,7 +150,26 @@ class Worker(QtCore.QObject):
                             os.makedirs(os.path.join(browse, folder_01, extract_path, os.path.splitext(file)[0]))
                             # with p_lock:
                             self.progress.emit(">>>~~~\nExtracting %s file in ../%s/Extracted/%s folder....." % (file, folder_01, file.split('.')[0]))
-                            tar.extractall(path=os.path.join(browse, folder_01, extract_path, os.path.splitext(file)[0]))
+                            def is_within_directory(directory, target):
+                                
+                                abs_directory = os.path.abspath(directory)
+                                abs_target = os.path.abspath(target)
+                            
+                                prefix = os.path.commonprefix([abs_directory, abs_target])
+                                
+                                return prefix == abs_directory
+                            
+                            def safe_extract(tar, path=".", members=None, *, numeric_owner=False):
+                            
+                                for member in tar.getmembers():
+                                    member_path = os.path.join(path, member.name)
+                                    if not is_within_directory(path, member_path):
+                                        raise Exception("Attempted Path Traversal in Tar File")
+                            
+                                tar.extractall(path, members, numeric_owner=numeric_owner) 
+                                
+                            
+                            safe_extract(tar, path=os.path.join(browse,folder_01,extract_path,os.path.splitext(file)["0"]))
                             # with p_lock:
                                 #self.progress.emit("Extracted %s file" % (file))
                     elif ext == "*.zip":
